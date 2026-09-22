@@ -1,7 +1,7 @@
 deployment:
   tasks:
-    - 'export APPPATH=/home/vitprofessional/apps/tiaba-dreager'
-    - 'export PUBLICPATH=/home/vitprofessional/public_html'
+    - 'export APPPATH=/home/vitprofessional/repositories/tiaba-dreager'
+    - 'export PUBLICPATH=/home/vitprofessional/public_html/drager/'
     - '/bin/mkdir -p "$APPPATH" "$PUBLICPATH"'
     - 'test -f "$APPPATH/.env"'
     - 'test -x /usr/local/bin/php'
