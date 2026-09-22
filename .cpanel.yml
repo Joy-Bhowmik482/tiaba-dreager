@@ -7,9 +7,6 @@ deployment:
     - 'test -f "$APPPATH/.env"'
     - 'test -x /usr/local/bin/php'
     - 'test -x /usr/local/bin/composer'
-
-    - 'npm ci --no-audit --no-fund'
-    - 'npm run build'
     - 'test -f public/build/manifest.json'
 
     - '/bin/rm -rf "$APPPATH/app" "$APPPATH/bootstrap" "$APPPATH/config" "$APPPATH/database" "$APPPATH/public" "$APPPATH/resources" "$APPPATH/routes"'

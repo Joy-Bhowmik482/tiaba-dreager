@@ -16,4 +16,4 @@ require $applicationPath.'/vendor/autoload.php';
 /** @var Application $app */
 $app = require_once $applicationPath.'/bootstrap/app.php';
 
-$app->handleRequest(Request::capture())->send();
+$app->handleRequest(Request::capture());
