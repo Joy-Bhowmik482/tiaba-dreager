@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-$applicationPath = '/home/nayeemcpi/apps/tiaba-dreager';
+$applicationPath = '/home/vitprofessional/apps/tiaba-dreager';
 
 if (file_exists($maintenance = $applicationPath . '/storage/framework/maintenance.php')) {
     require $maintenance;
