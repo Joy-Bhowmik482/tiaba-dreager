@@ -5,15 +5,15 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-$applicationPath =  dirname(__DIR__).'/apps/tiaba-dreager';
+$applicationPath = dirname(__DIR__, 2).'/apps/tiaba-dreager';
 
-if (file_exists($maintenance = $applicationPath . '/storage/framework/maintenance.php')) {
+if (file_exists($maintenance = $applicationPath.'/storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-require $applicationPath . '/vendor/autoload.php';
+require $applicationPath.'/vendor/autoload.php';
 
 /** @var Application $app */
-$app = require_once $applicationPath . '/bootstrap/app.php';
+$app = require_once $applicationPath.'/bootstrap/app.php';
 
-$app->handleRequest(Request::capture());
+$app->handleRequest(Request::capture())->send();
