@@ -3,38 +3,52 @@ deployment:
     - 'export APPPATH=/home/vitprofessional/apps/tiaba-dreager'
     - 'export PUBLICPATH=/home/vitprofessional/public_html/drager'
 
+    # Preflight
     - '/bin/mkdir -p "$APPPATH" "$PUBLICPATH"'
     - 'test -f "$APPPATH/.env"'
     - 'test -x /usr/local/bin/php'
     - 'test -x /usr/local/bin/composer'
     - 'test -f public/build/manifest.json'
 
+    # Replace application source
     - '/bin/rm -rf "$APPPATH/app" "$APPPATH/bootstrap" "$APPPATH/config" "$APPPATH/database" "$APPPATH/public" "$APPPATH/resources" "$APPPATH/routes"'
-
     - '/bin/cp -a app bootstrap config database public resources routes "$APPPATH/"'
     - '/bin/cp artisan composer.json composer.lock "$APPPATH/"'
 
+    # Required Laravel runtime directories
     - '/bin/mkdir -p "$APPPATH/storage/app/public" "$APPPATH/storage/framework/cache/data" "$APPPATH/storage/framework/sessions" "$APPPATH/storage/framework/views" "$APPPATH/storage/logs"'
 
-    - 'cd "$APPPATH" && /usr/local/bin/composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader'
+    # Install PHP dependencies
+    - 'cd "$APPPATH" && /usr/local/bin/composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader'
 
+    # Clear old bootstrap caches without touching database cache
+    - 'cd "$APPPATH" && /usr/local/bin/php artisan config:clear'
+    - 'cd "$APPPATH" && /usr/local/bin/php artisan route:clear'
+    - 'cd "$APPPATH" && /usr/local/bin/php artisan view:clear'
 
+    # Database migrations
+    - 'cd "$APPPATH" && /usr/local/bin/php artisan migrate --force'
 
+    # Clear application cache after migrations
+    - 'cd "$APPPATH" && /usr/local/bin/php artisan cache:clear'
+
+    # Replace compiled frontend assets
     - '/bin/rm -rf "$PUBLICPATH/build"'
     - '/bin/cp -a public/build "$PUBLICPATH/"'
 
+    # Public files
     - 'test -f "$PUBLICPATH/.htaccess" || /bin/cp public/.htaccess "$PUBLICPATH/.htaccess"'
     - 'test ! -f public/favicon.ico || /bin/cp public/favicon.ico "$PUBLICPATH/"'
     - 'test ! -f public/robots.txt || /bin/cp public/robots.txt "$PUBLICPATH/"'
     - '/bin/cp deployment/public-index.php "$PUBLICPATH/index.php"'
 
+    # Public storage symlink
     - 'test -e "$PUBLICPATH/storage" || test -L "$PUBLICPATH/storage" || /bin/ln -s "$APPPATH/storage/app/public" "$PUBLICPATH/storage"'
 
+    # Permissions
     - '/bin/chmod -R ug+rwX "$APPPATH/storage" "$APPPATH/bootstrap/cache"'
 
+    # Final production optimization
     - 'cd "$APPPATH" && /usr/local/bin/php artisan config:cache'
     - 'cd "$APPPATH" && /usr/local/bin/php artisan route:cache'
     - 'cd "$APPPATH" && /usr/local/bin/php artisan view:cache'
-    
-    - 'cd "$APPPATH" && /usr/local/bin/php artisan migrate --force'
-    - 'cd "$APPPATH" && /usr/local/bin/php artisan optimize:clear'
